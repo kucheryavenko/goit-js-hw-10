@@ -1,18 +1,18 @@
-import { fetchCountries } from './js/fetchCountries';
+// Импортируем библиотекы и доп. файлы
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import debounce from 'lodash.debounce';
+import { fetchCountries } from './js/fetchCountries';
+import getRefs from './js/getRefs';
 import './css/styles.css';
 
 const DEBOUNCE_DELAY = 300;
 
-const refs = {
-    inputEl: document.querySelector('#search-box'),
-    countryListEl: document.querySelector('.country-list'),
-    countryCardEl: document.querySelector('.country-info'),
-}
+const refs = getRefs();
 
+// Вешаем слушателя на инпут и запускаем ф-цию поиска страны
 refs.inputEl.addEventListener('input', debounce(onSearch, DEBOUNCE_DELAY));
 
+// Ф-ция ищет страну по значению инпута
 function onSearch() {
     const searchName = refs.inputEl.value;
 
@@ -24,25 +24,22 @@ function onSearch() {
 
     fetchCountries(searchName.trim())
         .then(renderCountriesMarkup)
-        .catch(error => {
-            Notify.failure('Oops, there is no country with that name');
-            refs.countryCardEl.innerHTML = '';
-            refs.countryListEl.innerHTML = '';
-        });
+        .catch(onFechError);
 }
 
+// Ф-ция рендерит разметку в зависимости от условия
 function renderCountriesMarkup(country) {
     const cardMarkup = country.map(({ name, capital, population, flags, languages }) => {
-        return `<ul class="card">
-                <li class="card-item"><img class="card-img" src="${flags.svg}" alt="flag" width="20">${name.official}</li>
-                <li class="card-item">Capital: ${capital}</li>
-                <li class="card-item">Population: ${population}</li>
-                <li class="card-item">Languages: ${Object.values(languages).join(', ')}</li>
+        return `<ul class="card-list list">
+                <li class="card-item accent"><img class="card-img" src="${flags.svg}" alt="flag" width="40">${name.official}</li>
+                <li class="card-item">Capital:&nbsp<span class="card-style">${capital}</span></li>
+                <li class="card-item">Population:&nbsp<span class="card-style">${population}</span></li>
+                <li class="card-item">Languages:&nbsp<span class="card-style">${Object.values(languages).join(', ')}</span></li>
             </ul>`
         }).join('');
 
     const listMarkup = country.map(({ name, flags }) => {
-        return `<li class="country-item"><img class="country-img" src="${flags.svg}" alt="flag" width="20">${name.official}</li>`
+        return `<li class="country-item"><img class="country-img" src="${flags.svg}" alt="flag" width="30">${name.official}</li>`
         }).join('');
 
     if (country.length > 10) {
@@ -56,4 +53,9 @@ function renderCountriesMarkup(country) {
     }   
 }
 
-console.log('Test commit and push');
+// Ф-ция отвечает за ошибку поиска
+function onFechError() {
+    Notify.failure('Oops, there is no country with that name');
+    refs.countryCardEl.innerHTML = '';
+    refs.countryListEl.innerHTML = '';
+}
