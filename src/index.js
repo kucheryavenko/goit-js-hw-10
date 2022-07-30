@@ -55,3 +55,5 @@ function renderCountriesMarkup(country) {
         refs.countryCardEl.innerHTML = cardMarkup;
     }   
 }
+
+console.log('Test commit and push');
