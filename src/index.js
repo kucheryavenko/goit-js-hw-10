@@ -50,7 +50,7 @@ function renderCountriesMarkup(country) {
     } else if (country.length === 1) {
         refs.countryListEl.innerHTML = '';
         refs.countryCardEl.innerHTML = cardMarkup;
-    }   
+    }
 }
 
 // Ф-ция отвечает за ошибку поиска
